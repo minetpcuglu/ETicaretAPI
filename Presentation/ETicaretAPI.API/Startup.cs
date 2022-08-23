@@ -30,8 +30,8 @@ namespace ETicaretAPI.API
         public void ConfigureServices(IServiceCollection services)
         {
             #region Context
-            services.AddScoped<ETicaretAPIDbContext>();
-            services.AddDbContext<ETicaretAPIDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
+            services.AddSingleton<ETicaretAPIDbContext>();
+            services.AddDbContext<ETicaretAPIDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer")),ServiceLifetime.Singleton);
             #endregion
 
             services.AddControllers();
