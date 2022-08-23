@@ -32,18 +32,22 @@ namespace ETicaretAPI.API.Controllers
         }
 
         [HttpGet("get")]
-        public async void Get()
+        public async Task Get()
         {
             await  _writeReadRepo.AddRangeAsync(new()
             {
                 new() { Id = Guid.NewGuid(), Name = "1", CreatedDate = DateTime.Now, UnitInStock = 10 },
                 new() { Id = Guid.NewGuid(), Name = "2", CreatedDate = DateTime.Now, UnitInStock = 20 },
                 new() { Id = Guid.NewGuid(), Name = "3", CreatedDate = DateTime.Now, UnitInStock = 30 },
-
             });
            await _writeReadRepo.SaveAsync();
         }
 
-
+        [HttpGet("get/{id}")]
+        public async Task<IActionResult> Get(string id)
+        {
+             var value= await _productReadRepo.GetByIdAsync(id);
+            return Ok(value);
+        }
     }
 }
