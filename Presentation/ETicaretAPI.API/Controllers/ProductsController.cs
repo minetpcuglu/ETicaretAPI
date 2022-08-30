@@ -1,4 +1,6 @@
 ﻿using ETicaretAPI.Application.Abstractions;
+using ETicaretAPI.Application.Repositories.Customers;
+using ETicaretAPI.Application.Repositories.Orders;
 using ETicaretAPI.Application.Repositories.Products;
 using ETicaretAPI.Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -16,13 +18,19 @@ namespace ETicaretAPI.API.Controllers
     {
         private readonly IProductService _productService;
         private readonly IProductReadRepository _productReadRepo;
+        private readonly IOrderReadRepository _orderReadRepo;
         private readonly IProductWriteRepository _productWriteRepo;
+        private readonly IOrderWriteRepository _orderWriteRepo;
+        private readonly ICustomerWriteRepository _customerWriteRepo;
 
-        public ProductsController(IProductService productService, IProductReadRepository productReadRepo, IProductWriteRepository productWriteRepo)
+        public ProductsController(IProductService productService, IProductReadRepository productReadRepo, IOrderReadRepository orderReadRepo, IProductWriteRepository productWriteRepo, IOrderWriteRepository orderWriteRepo, ICustomerWriteRepository customerWriteRepo)
         {
             _productService = productService;
             _productReadRepo = productReadRepo;
+            _orderReadRepo = orderReadRepo;
             _productWriteRepo = productWriteRepo;
+            _orderWriteRepo = orderWriteRepo;
+            _customerWriteRepo = customerWriteRepo;
         }
 
         [HttpGet("getproducts")]
@@ -35,15 +43,24 @@ namespace ETicaretAPI.API.Controllers
         [HttpGet("get")]
         public async Task Get()
         {
-            //await _productWriteRepo.AddRangeAsync(new()
-            //{
-            //    new() { Id = Guid.NewGuid(), Name = "1", CreatedDate = DateTime.Now, UnitInStock = 10 },
-            //    new() { Id = Guid.NewGuid(), Name = "2", CreatedDate = DateTime.Now, UnitInStock = 20 },
-            //    new() { Id = Guid.NewGuid(), Name = "3", CreatedDate = DateTime.Now, UnitInStock = 30 },
-            //});
-            Product p = await _productReadRepo.GetByIdAsync("530fb940-12ec-4e6b-9dc0-d9ea13edad26",false);
-            p.Name = "Fen";
-            await _productWriteRepo.SaveAsync();
+            var customerId = Guid.NewGuid();
+            await _customerWriteRepo.AddAsync(new() { Id = customerId, Name = "mineee" });
+            await _orderWriteRepo.AddRangeAsync(new()
+            {
+                
+                new() { Description = "bla",Address="kastamonu",CustomerId=customerId },
+                new() {  Description = "2",Address="cankırı" ,CustomerId=customerId},
+         
+            });
+            await _orderWriteRepo.SaveAsync();
+        }
+
+        [HttpGet("getbyıd")]
+        public async Task GetById()
+        {
+            Order order = await _orderReadRepo.GetByIdAsync("a70c8d6b-6bb1-4996-4925-08da8a61c3b7");
+            order.Address = "Van";
+            await _orderWriteRepo.SaveAsync();
         }
 
         [HttpGet("get/{id}")]
