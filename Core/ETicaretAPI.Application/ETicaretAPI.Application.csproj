@@ -12,4 +12,9 @@
     <ProjectReference Include="..\ETicaretAPI.Domain\ETicaretAPI.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Cos\" />
+    <Folder Include="Dtos\" />
+  </ItemGroup>
+
 </Project>

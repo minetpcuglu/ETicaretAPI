@@ -34,6 +34,11 @@ namespace ETicaretAPI.API
             services.AddDbContext<ETicaretAPIDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
             #endregion
 
+            #region CORS 
+            services.AddCors(options => options.AddDefaultPolicy(policy =>
+              policy.WithOrigins("http://localhost:4200", "http://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
+            #endregion
+
             services.AddControllers();
             services.AddControllersWithViews();
 
@@ -56,6 +61,8 @@ namespace ETicaretAPI.API
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors();
 
             app.UseRouting();
 

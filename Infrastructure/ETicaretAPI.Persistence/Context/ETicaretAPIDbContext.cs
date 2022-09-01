@@ -18,6 +18,7 @@ namespace ETicaretAPI.Persistence.Context
         public DbSet<Order> Orders { get; set; }
         public DbSet<Customer> Customers { get; set; }
 
+
         //gelen isteklerde insert uptade insert ise createddate update ise updateddate doldur
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
