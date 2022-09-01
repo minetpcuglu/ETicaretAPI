@@ -29,7 +29,8 @@ namespace ETicaretAPI.Persistence.Context
                 _ = data.State switch //return yapmaya gerek olmadıgı ıcın _ ile döndürmedik
                 {
                     EntityState.Added => data.Entity.CreatedDate = DateTime.Now,
-                    EntityState.Modified => data.Entity.UpdatedDate = DateTime.Now
+                    EntityState.Modified => data.Entity.UpdatedDate = DateTime.Now,
+                    _ => DateTime.Now //delete işlemi için yapıldı silinmiş veriler update girmesinn diye
                 };
             }
         return await base.SaveChangesAsync(cancellationToken);

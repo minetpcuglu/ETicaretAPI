@@ -58,7 +58,7 @@ namespace ETicaretAPI.API.Controllers
             var products = _productWriteRepository.AddAsync(new()
             {
                 Name=request.Name,
-                UnitInStock=request.UnitsInStock,
+                UnitInStock=request.UnitInStock,
                 Price = request.Price
             });
             await _productWriteRepository.SaveAsync();
@@ -70,18 +70,18 @@ namespace ETicaretAPI.API.Controllers
         [Route("updateProduct")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> AddProduct([FromBody] ProductUpdateRequest request)
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductUpdateRequest request)
         {
             Product product = await _productReadRepository.GetByIdAsync(request.Id);
             product.Name = request.Name;
             product.Price = request.Price;
-            product.UnitInStock = request.UnitsInStock;
+            product.UnitInStock = request.UnitInStock;
             await _productWriteRepository.SaveAsync();
             return Ok();
         }
 
         [HttpDelete()]
-        [Route("deleteProduct")]
+        [Route("deleteProduct/{id}")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> DeleteProduct(string id)
