@@ -30,7 +30,7 @@ namespace ETicaretAPI.API.Controllers
         }
 
         [HttpGet]
-        [Route("getProducts")]
+        [Route("GetProducts")]
         [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public IActionResult GetProducts()
@@ -40,7 +40,7 @@ namespace ETicaretAPI.API.Controllers
         }
 
         [HttpGet]
-        [Route("getProductGetById")]
+        [Route("GetProductGetById")]
         [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public IActionResult GetProduct(string id)
@@ -50,11 +50,15 @@ namespace ETicaretAPI.API.Controllers
         }
 
         [HttpPost()]
-        [Route("addProduct")]
+        [Route("AddProduct")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> AddProduct([FromBody] ProductCreateRequest request)
         {
+            if (ModelState.IsValid)
+            {
+
+            }
             var products = _productWriteRepository.AddAsync(new()
             {
                 Name=request.Name,
@@ -67,7 +71,7 @@ namespace ETicaretAPI.API.Controllers
 
 
         [HttpPut()]
-        [Route("updateProduct")]
+        [Route("UpdateProduct")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> UpdateProduct([FromBody] ProductUpdateRequest request)
@@ -81,7 +85,7 @@ namespace ETicaretAPI.API.Controllers
         }
 
         [HttpDelete()]
-        [Route("deleteProduct/{id}")]
+        [Route("DeleteProduct/{id}")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> DeleteProduct(string id)

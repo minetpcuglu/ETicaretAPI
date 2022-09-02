@@ -1,5 +1,8 @@
+using ETicaretAPI.Application.CrossCuttingConcerns.Validators.Products;
+using ETicaretAPI.Infrastructure.Filters;
 using ETicaretAPI.Persistence;
 using ETicaretAPI.Persistence.Context;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -39,7 +42,13 @@ namespace ETicaretAPI.API
               policy.WithOrigins("http://localhost:4200", "http://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
             #endregion
 
-            services.AddControllers();
+            #region FluentValidation
+            services.AddControllers(options => options.Filters.Add<ValidationFilter>())//filters devreye sokma 
+                .AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidation>())//fluent validation için bir tane validation adresi versek yeterli <CreateProductValidation> reflection ile bulup register ediyor
+                .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true); //default geleni false yap
+            #endregion
+
+
             services.AddControllersWithViews();
 
             services.AddPersistenceServices(); //IoC container Extension ile yaptýk.
