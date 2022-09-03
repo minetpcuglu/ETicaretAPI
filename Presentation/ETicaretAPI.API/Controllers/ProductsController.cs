@@ -2,6 +2,7 @@
 using ETicaretAPI.Application.Repositories.Customers;
 using ETicaretAPI.Application.Repositories.Orders;
 using ETicaretAPI.Application.Repositories.Products;
+using ETicaretAPI.Application.RequestParameters;
 using ETicaretAPI.Application.Requests.Products;
 using ETicaretAPI.Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -33,10 +34,25 @@ namespace ETicaretAPI.API.Controllers
         [Route("GetProducts")]
         [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public IActionResult GetProducts()
+        public IActionResult GetProducts([FromQuery]Pagination pagination)
         {
-            var products = _productReadRepository.GetAll(false); //tracking veri tabanı ile ilgili herhangi bir işlem yapılmadıgı için false cagırılıyor
-            return Ok(products);
+            var totalCount = _productReadRepository.GetAll(false).Count() ;
+            var products = _productReadRepository.GetAll(false)//tracking veri tabanı ile ilgili herhangi bir işlem yapılmadıgı için false cagırılıyor
+                .Skip(pagination.Page * pagination.Size) //önce skip ile hangi aralıga gidilcekse gidilir
+                .Take(pagination.Size) //sonra take ile alınır
+                .Select(p=> new
+                {
+                    p.Id,
+                    p.Name,
+                    p.Price,
+                    p.UnitInStock,
+                    p.CreatedDate,
+                    p.UpdatedDate
+                }); 
+            return Ok(new {
+                totalCount,
+                products
+            });
         }
 
         [HttpGet]
