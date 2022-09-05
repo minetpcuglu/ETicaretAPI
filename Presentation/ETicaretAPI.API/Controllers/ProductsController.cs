@@ -5,10 +5,12 @@ using ETicaretAPI.Application.Repositories.Products;
 using ETicaretAPI.Application.RequestParameters;
 using ETicaretAPI.Application.Requests.Products;
 using ETicaretAPI.Domain.Entities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -22,12 +24,14 @@ namespace ETicaretAPI.API.Controllers
         private readonly IProductService _productService;
         private readonly IProductReadRepository _productReadRepository;
         private readonly IProductWriteRepository _productWriteRepository;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductsController(IProductService productService, IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository)
+        public ProductsController(IProductService productService, IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository, IWebHostEnvironment webHostEnvironment)
         {
             _productService = productService;
             _productReadRepository = productReadRepository;
             _productWriteRepository = productWriteRepository;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -56,7 +60,7 @@ namespace ETicaretAPI.API.Controllers
         }
 
         [HttpGet]
-        [Route("GetProductGetById")]
+        [Route("GetProductGetById/ID:{id}")]
         [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public IActionResult GetProduct(string id)
@@ -101,7 +105,7 @@ namespace ETicaretAPI.API.Controllers
         }
 
         [HttpDelete()]
-        [Route("DeleteProduct/{id}")]
+        [Route("DeleteProduct/ID:{id}")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> DeleteProduct(string id)
@@ -110,6 +114,30 @@ namespace ETicaretAPI.API.Controllers
             await _productWriteRepository.SaveAsync();
             return Ok();
         }
+        [HttpPost()]
+        [Route("upload")]
+        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> Upload()
+        {
+            Random r = new();
+            //wwwroot/resource/product-images
+            string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath,"resource/product-images");
 
+            if (!Directory.Exists(uploadPath)) //yoksa oluştur
+            {
+                Directory.CreateDirectory(uploadPath);
+            }
+
+            //dosyaları yakalamak için
+            foreach (IFormFile file in Request.Form.Files)
+            {
+                string fullPath = Path.Combine(uploadPath,$"{r.Next()}{Path.GetExtension(file.FileName)}");
+                using FileStream fileStream = new(fullPath, FileMode.Create, FileAccess.Write, FileShare.None,1024*1024,useAsync:false);
+                await file.CopyToAsync(fileStream);
+                await fileStream.FlushAsync();
+            }
+            return Ok();
+        }
     }
 }

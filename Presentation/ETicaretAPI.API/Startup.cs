@@ -70,6 +70,7 @@ namespace ETicaretAPI.API
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles(); //file upload için
 
             app.UseCors();
 
