@@ -1,4 +1,5 @@
 using ETicaretAPI.Application.CrossCuttingConcerns.Validators.Products;
+using ETicaretAPI.Infrastructure;
 using ETicaretAPI.Infrastructure.Filters;
 using ETicaretAPI.Persistence;
 using ETicaretAPI.Persistence.Context;
@@ -48,10 +49,12 @@ namespace ETicaretAPI.API
                 .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true); //default geleni false yap
             #endregion
 
+            #region IoC
+            services.AddPersistenceServices(); //IoC container Extension ile yaptýk.
+            services.AddInfrastructureServices(); //IoC container Extension ile yaptýk.
+            #endregion
 
             services.AddControllersWithViews();
-
-            services.AddPersistenceServices(); //IoC container Extension ile yaptýk.
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ETicaretAPI.API", Version = "v1" });
