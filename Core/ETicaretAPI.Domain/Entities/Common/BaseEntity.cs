@@ -10,6 +10,6 @@ namespace ETicaretAPI.Domain.Entities.Common
     {
         public Guid Id { get; set; }
         public DateTime CreatedDate { get; set; }
-        public DateTime? UpdatedDate { get; set; }
+        virtual public DateTime? UpdatedDate { get; set; } //base entityden türeyen tüm classlarda kullanmak istemezsek virtual ile migration ile ekleme zorunlulugunu kaldırıyoruz   istemedigimiz classta override ederek kullanmıyoruz (örn File.cs)
     }
 }

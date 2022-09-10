@@ -1,5 +1,6 @@
 ﻿using ETicaretAPI.Domain.Entities;
 using ETicaretAPI.Domain.Entities.Common;
+using ETicaretAPI.Domain.Entities.Files;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,9 @@ namespace ETicaretAPI.Persistence.Context
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<File> Files { get; set; }
+        public DbSet<ProductImageFile> ProductImageFiles { get; set; }
+        public DbSet<InvoiceFile> InvoiceFiles { get; set; }
 
 
         //gelen isteklerde insert uptade insert ise createddate update ise updateddate doldur
