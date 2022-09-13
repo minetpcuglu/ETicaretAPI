@@ -13,6 +13,7 @@ namespace ETicaretAPI.Domain.Entities.Files
     {
         public string FileName { get; set; }
         public string Path { get; set; }
+        public string Storage { get; set; }
 
 
         [NotMapped]

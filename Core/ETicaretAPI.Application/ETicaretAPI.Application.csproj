@@ -16,6 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Abstractions\Storage\Azure\" />
+    <Folder Include="Abstractions\Storage\AWS\" />
     <Folder Include="Cos\" />
     <Folder Include="Dtos\" />
   </ItemGroup>
