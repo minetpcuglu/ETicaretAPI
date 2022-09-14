@@ -56,13 +56,13 @@ namespace ETicaretAPI.API.Controllers
         [Route("GetProducts")]
         [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public IActionResult GetProducts([FromQuery]Pagination pagination)
+        public IActionResult GetProducts([FromQuery] Pagination pagination)
         {
-            var totalCount = _productReadRepository.GetAll(false).Count() ;
+            var totalCount = _productReadRepository.GetAll(false).Count();
             var products = _productReadRepository.GetAll(false)//tracking veri tabanı ile ilgili herhangi bir işlem yapılmadıgı için false cagırılıyor
                 .Skip(pagination.Page * pagination.Size) //önce skip ile hangi aralıga gidilcekse gidilir
                 .Take(pagination.Size) //sonra take ile alınır
-                .Select(p=> new
+                .Select(p => new
                 {
                     p.Id,
                     p.Name,
@@ -70,8 +70,9 @@ namespace ETicaretAPI.API.Controllers
                     p.UnitInStock,
                     p.CreatedDate,
                     p.UpdatedDate
-                }); 
-            return Ok(new {
+                });
+            return Ok(new
+            {
                 totalCount,
                 products
             });
@@ -83,7 +84,7 @@ namespace ETicaretAPI.API.Controllers
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public IActionResult GetProduct(string id)
         {
-            var products = _productReadRepository.GetByIdAsync(id,false);
+            var products = _productReadRepository.GetByIdAsync(id, false);
             return Ok(products);
         }
 
@@ -99,8 +100,8 @@ namespace ETicaretAPI.API.Controllers
             }
             var products = _productWriteRepository.AddAsync(new()
             {
-                Name=request.Name,
-                UnitInStock=request.UnitInStock,
+                Name = request.Name,
+                UnitInStock = request.UnitInStock,
                 Price = request.Price
             });
             await _productWriteRepository.SaveAsync();
@@ -136,16 +137,19 @@ namespace ETicaretAPI.API.Controllers
         [Route("upload")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> Upload()
+        public async Task<IActionResult> Upload(string id)
         {
-            var datas = await _storageService.UploadAsync("resource/files", Request.Form.Files);
-            //   var datas= await _fileService.UploadAsync("resource/files", Request.Form.Files);
+            var datas = await _storageService.UploadAsync("photo-images", Request.Form.Files);
+
+            Product product = await _productReadRepository.GetByIdAsync(id, true); //tracking true update işlemi yapıcak
+
             await _productImageFileWriteRepository.AddRangeAsync(datas.Select(d => new ProductImageFile()
             {
                 FileName = d.fileName,
-                 Path = d.pathOrContainerName,
-                 Storage=_storageService.StorageName
-             }).ToList());
+                Path = d.pathOrContainerName,
+                Storage = _storageService.StorageName,
+                Products = new List<Product>(){product}
+            }).ToList());
             await _productImageFileWriteRepository.SaveAsync();
 
             //await _invoiceFileWriteRepository.AddRangeAsync(datas.Select(d => new InvoiceFile()

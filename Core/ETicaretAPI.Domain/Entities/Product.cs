@@ -1,4 +1,5 @@
 ﻿using ETicaretAPI.Domain.Entities.Common;
+using ETicaretAPI.Domain.Entities.Files;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,8 @@ namespace ETicaretAPI.Domain.Entities
         public float Price { get; set; }
 
         public ICollection<Order> Orders { get; set; }
+
+        public ICollection<ProductImageFile> ProductImageFiles { get; set; } //bir ürünün birden fazla resmi olabilir
 
     }
 }
