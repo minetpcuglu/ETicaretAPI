@@ -2,6 +2,7 @@ using ETicaretAPI.Application.CrossCuttingConcerns.Validators.Products;
 using ETicaretAPI.Infrastructure;
 using ETicaretAPI.Infrastructure.Enums;
 using ETicaretAPI.Infrastructure.Filters;
+using ETicaretAPI.Infrastructure.Services.Storage.Azure;
 using ETicaretAPI.Infrastructure.Services.Storage.Local;
 using ETicaretAPI.Persistence;
 using ETicaretAPI.Persistence.Context;
@@ -54,7 +55,8 @@ namespace ETicaretAPI.API
             #region IoC
             services.AddPersistenceServices(); //IoC container Extension ile yaptýk.
             services.AddInfrastructureServices(); //IoC container Extension ile yaptýk.
-            services.AddStorage<LocalStorage>();//IoC container Extension ile yaptýk.  
+            //services.AddStorage<LocalStorage>();//IoC container Extension ile yaptýk.  
+            services.AddStorage<AzureStorage>();//IoC container Extension ile yaptýk.  
             //services.AddStorage(StorageType.Local); -- Bu sekildede kullanýlabilir //enum ile kullaným hali
             #endregion
 

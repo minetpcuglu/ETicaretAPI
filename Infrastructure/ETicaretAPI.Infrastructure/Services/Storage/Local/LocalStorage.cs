@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ETicaretAPI.Infrastructure.Services.Storage.Local
 {
-    public class LocalStorage : ILocalStorage
+    public class LocalStorage :Storage, ILocalStorage
     {
 
         private readonly IWebHostEnvironment _webHostEnvironment;
@@ -55,36 +55,31 @@ namespace ETicaretAPI.Infrastructure.Services.Storage.Local
 
         public async Task<List<(string fileName, string pathOrContainerName)>> UploadAsync(string pathOrContainerName, IFormFileCollection files)
         {
-            Random r = new();
-            //wwwroot/resource/product-images
-            string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, pathOrContainerName);
+        
+                //wwwroot/resource/product-images
+                string uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, pathOrContainerName);
 
-            if (!Directory.Exists(uploadPath)) //yoksa oluştur
-            {
-                Directory.CreateDirectory(uploadPath);
-            }
-            List<(string fileName, string path)> datas = new();
-            //koleksiyon oluşturma
-            List<bool> results = new();
+                if (!Directory.Exists(uploadPath)) //yoksa oluştur
+                {
+                    Directory.CreateDirectory(uploadPath);
+                }
+                List<(string fileName, string path)> datas = new();
+                //koleksiyon oluşturma
+                List<bool> results = new();
 
-            //dosyaları yakalamak için
-            foreach (IFormFile file in files)
-            {
-                //string fileNewName = await FileRenameAsync(uploadPath, file.FileName);
-                bool result = await CopyFileAsync($"{uploadPath}\\{file.Name}", file);
-                datas.Add((file.Name, $"{pathOrContainerName}\\{file.Name}"));
-                results.Add(result);
-            }
-            if (results.TrueForAll(r => r.Equals(true))) //resultlarin hepsi true mu  degilse true eşitle
-            {
+                //dosyaları yakalamak için
+                foreach (IFormFile file in files)
+                {
+                    //string fileNewName = await FileRenameAsync(pathOrContainerName, file.Name, HasFile);
+                    bool result = await CopyFileAsync($"{uploadPath}\\{file.Name}", file);
+                    datas.Add((file.Name, $"{pathOrContainerName}\\{file.Name}"));
+                    results.Add(result);
+                }
                 return datas;
-            }
-            else
-            {
-                //hata fırlat
-                //yukarıdaki if geçerli değil ise burada dosyaların sunucuda yüklenirken hata alındıgına dair uyarıcı ex oluştur 
-            }
-            return datas;
+           
+            
+           
+           
         }
     }
 }
