@@ -231,7 +231,5 @@ namespace ETicaretAPI.API.Controllers
             await _productWriteRepository.SaveAsync();
             return Ok();
         }
-
-
     }
 }
