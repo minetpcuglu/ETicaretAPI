@@ -1,3 +1,4 @@
+using ETicaretAPI.Application;
 using ETicaretAPI.Application.CrossCuttingConcerns.Validators.Products;
 using ETicaretAPI.Infrastructure;
 using ETicaretAPI.Infrastructure.Enums;
@@ -54,6 +55,7 @@ namespace ETicaretAPI.API
 
             #region IoC
             services.AddPersistenceServices(); //IoC container Extension ile yaptýk.
+            services.AddApplicationServices(); //IoC container Extension ile yaptýk.
             services.AddInfrastructureServices(); //IoC container Extension ile yaptýk.
             //services.AddStorage<LocalStorage>();//IoC container Extension ile yaptýk.  
             services.AddStorage<AzureStorage>();//IoC container Extension ile yaptýk.  

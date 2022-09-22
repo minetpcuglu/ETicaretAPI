@@ -1,4 +1,6 @@
 ﻿using ETicaretAPI.Application.Abstractions;
+using ETicaretAPI.Application.Features.Commands.Products.CreateProduct;
+using ETicaretAPI.Application.Features.Queries.Products.GetAllProduct;
 using ETicaretAPI.Application.Repositories.Customers;
 using ETicaretAPI.Application.Repositories.Files;
 using ETicaretAPI.Application.Repositories.InvoiceFiles;
@@ -9,6 +11,7 @@ using ETicaretAPI.Application.RequestParameters;
 using ETicaretAPI.Application.Requests.Products;
 using ETicaretAPI.Domain.Entities;
 using ETicaretAPI.Domain.Entities.Files;
+using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -38,9 +41,10 @@ namespace ETicaretAPI.API.Controllers
         private readonly IInvoiceFileReadRepository _invoiceFileReadRepository;
         private readonly IFileReadRepository _fileReadRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IMediator _mediator;
         private IConfiguration configuration;
 
-        public ProductsController(IProductService productService, IStorageService storageService, IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository, IProductImageFileWriteRepository productImageFileWriteRepository, IProductImageReadRepository productImageFileReadRepository, IFileWriteRepository fileWriteRepository, IInvoiceFileWriteRepository invoiceFileWriteRepository, IInvoiceFileReadRepository invoiceFileReadRepository, IFileReadRepository fileReadRepository, IWebHostEnvironment webHostEnvironment, IConfiguration configuration = null)
+        public ProductsController(IProductService productService, IStorageService storageService, IProductReadRepository productReadRepository, IProductWriteRepository productWriteRepository, IProductImageFileWriteRepository productImageFileWriteRepository, IProductImageReadRepository productImageFileReadRepository, IFileWriteRepository fileWriteRepository, IInvoiceFileWriteRepository invoiceFileWriteRepository, IInvoiceFileReadRepository invoiceFileReadRepository, IFileReadRepository fileReadRepository, IWebHostEnvironment webHostEnvironment, IMediator mediator, IConfiguration configuration)
         {
             _productService = productService;
             _storageService = storageService;
@@ -53,6 +57,7 @@ namespace ETicaretAPI.API.Controllers
             _invoiceFileReadRepository = invoiceFileReadRepository;
             _fileReadRepository = fileReadRepository;
             _webHostEnvironment = webHostEnvironment;
+            _mediator = mediator;
             this.configuration = configuration;
         }
 
@@ -60,26 +65,10 @@ namespace ETicaretAPI.API.Controllers
         [Route("GetProducts")]
         [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public IActionResult GetProducts([FromQuery] Pagination pagination)
+        public async Task<IActionResult> GetProducts([FromQuery] GetAllProductQueryRequest request)
         {
-            var totalCount = _productReadRepository.GetAll(false).Count();
-            var products = _productReadRepository.GetAll(false)//tracking veri tabanı ile ilgili herhangi bir işlem yapılmadıgı için false cagırılıyor
-                .Skip(pagination.Page * pagination.Size) //önce skip ile hangi aralıga gidilcekse gidilir
-                .Take(pagination.Size) //sonra take ile alınır
-                .Select(p => new
-                {
-                    p.Id,
-                    p.Name,
-                    p.Price,
-                    p.UnitInStock,
-                    p.CreatedDate,
-                    p.UpdatedDate
-                });
-            return Ok(new
-            {
-                totalCount,
-                products
-            });
+            var response= await _mediator.Send(request);
+            return Ok(response);
         }
 
         [HttpGet]
@@ -96,20 +85,10 @@ namespace ETicaretAPI.API.Controllers
         [Route("AddProduct")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> AddProduct([FromBody] ProductCreateRequest request)
+        public async Task<IActionResult> AddProduct([FromBody] CreateProductCommandRequest request)
         {
-            if (ModelState.IsValid)
-            {
-
-            }
-            var products = _productWriteRepository.AddAsync(new()
-            {
-                Name = request.Name,
-                UnitInStock = request.UnitInStock,
-                Price = request.Price
-            });
-            await _productWriteRepository.SaveAsync();
-            return Ok(products);
+            var response = await _mediator.Send(request);
+            return Ok();
         }
 
 
