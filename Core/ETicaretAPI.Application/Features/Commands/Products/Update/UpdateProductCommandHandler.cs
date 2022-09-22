@@ -14,6 +14,7 @@ namespace ETicaretAPI.Application.Features.Commands.Products.Update
     {
         private readonly IProductWriteRepository _productWriteRepository;
         private readonly IProductReadRepository _productReadRepository;
+      
 
         public UpdateProductCommandHandler(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository)
         {

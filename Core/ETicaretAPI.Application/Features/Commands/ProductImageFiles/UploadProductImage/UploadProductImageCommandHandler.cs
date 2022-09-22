@@ -30,7 +30,7 @@ namespace ETicaretAPI.Application.Features.Commands.ProductImageFiles.UploadProd
 
         public async Task<UploadProductImageCommandResponse> Handle(UploadProductImageCommandRequest request, CancellationToken cancellationToken)
         {
-            var datas = await _storageService.UploadAsync("photo-images", request.FormCollection);
+            var datas = await _storageService.UploadAsync("photo-images", request.Files);
 
             Product product = await _productReadRepository.GetByIdAsync(request.Id, true); //tracking true update işlemi yapıcak
 

@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace ETicaretAPI.Application.Features.Queries.ProductImageFiles.GetProductImages
 {
-   public class GetProductImageQueryResponse
+   public class GetProductImageQueryResponse //geriye ne döndürmek istersek response da yazıyoruz 
     {
+        public string Path { get; set; }
+        public Guid Id { get; set; }
+        public string FileName { get; set; }
     }
 }
