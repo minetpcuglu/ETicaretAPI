@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ETicaretAPI.Application.Features.Queries.Products.GetAllProduct
+namespace ETicaretAPI.Application.Features.Queries.Products.GetAll
 {
     //requeste karsılık dönen response 
    public class GetAllProductQueryRequest:IRequest<GetAllProductQueryResponse>

@@ -1,6 +1,11 @@
 ﻿using ETicaretAPI.Application.Abstractions;
-using ETicaretAPI.Application.Features.Commands.Products.CreateProduct;
-using ETicaretAPI.Application.Features.Queries.Products.GetAllProduct;
+using ETicaretAPI.Application.Features.Commands.ProductImageFiles.DeleteProductImage;
+using ETicaretAPI.Application.Features.Commands.ProductImageFiles.UploadProductImage;
+using ETicaretAPI.Application.Features.Commands.Products.Create;
+using ETicaretAPI.Application.Features.Commands.Products.DeleteProduct;
+using ETicaretAPI.Application.Features.Commands.Products.Update;
+using ETicaretAPI.Application.Features.Queries.Products.GetAll;
+using ETicaretAPI.Application.Features.Queries.Products.GetById;
 using ETicaretAPI.Application.Repositories.Customers;
 using ETicaretAPI.Application.Repositories.Files;
 using ETicaretAPI.Application.Repositories.InvoiceFiles;
@@ -65,20 +70,20 @@ namespace ETicaretAPI.API.Controllers
         [Route("GetProducts")]
         [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> GetProducts([FromQuery] GetAllProductQueryRequest request)
+        public async Task<IActionResult> GetProducts([FromQuery] GetAllProductQueryRequest request) //data queryden geliyo
         {
             var response= await _mediator.Send(request);
             return Ok(response);
         }
 
         [HttpGet]
-        [Route("GetProductGetById/{id}")]
+        [Route("GetProductGetById/{Id}")] //requestteki isimle aynı olmalıki bind edebilsin
         [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public IActionResult GetProduct(string id)
+        public async Task<IActionResult> GetProduct([FromRoute] GetByIdProductQueryRequest request) //data routedan geliyo
         {
-            var products = _productReadRepository.GetByIdAsync(id, false);
-            return Ok(products);
+            GetByIdProductQueryResponse response = await _mediator.Send(request);
+            return Ok(response);
         }
 
         [HttpPost()]
@@ -96,46 +101,30 @@ namespace ETicaretAPI.API.Controllers
         [Route("UpdateProduct")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> UpdateProduct([FromBody] ProductUpdateRequest request)
+        public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductCommandRequest request)
         {
-            Product product = await _productReadRepository.GetByIdAsync(request.Id);
-            product.Name = request.Name;
-            product.Price = request.Price;
-            product.UnitInStock = request.UnitInStock;
-            await _productWriteRepository.SaveAsync();
+            var response = await _mediator.Send(request);
             return Ok();
         }
 
         [HttpDelete()]
-        [Route("DeleteProduct/{id}")]
+        [Route("DeleteProduct/{Id}")] //[fromroute] ıd routen parametre olarak geliyor
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> DeleteProduct(string id)
+        public async Task<IActionResult> DeleteProduct([FromRoute] DeleteProductCommandRequest request)
         {
-            await _productWriteRepository.RemoveAsync(id);
-            await _productWriteRepository.SaveAsync();
+            DeleteProductCommandResponse response= await _mediator.Send(request); ///var value = da olabilir
             return Ok();
         }
+
         [HttpPost()]
         [Route("upload")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> Upload(string id)
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError)] //ıd route parametre olarak gelmiyor query string olrak geliyo o zaman form query denilir.
+        public async Task<IActionResult> Upload([FromQuery] UploadProductImageCommandRequest request)
         {
-            var datas = await _storageService.UploadAsync("photo-images", Request.Form.Files);
-
-            Product product = await _productReadRepository.GetByIdAsync(id, true); //tracking true update işlemi yapıcak
-
-            await _productImageFileWriteRepository.AddRangeAsync(datas.Select(d => new ProductImageFile()
-            {
-                FileName = d.fileName,
-                Path = d.pathOrContainerName,
-                Storage = _storageService.StorageName,
-                Products = new List<Product>(){product}
-            }).ToList());
-
-            await _productImageFileWriteRepository.SaveAsync();
-
+            request.Files = Request.Form.Files;
+            UploadProductImageCommandResponse response = await _mediator.Send(request);
             //await _invoiceFileWriteRepository.AddRangeAsync(datas.Select(d => new InvoiceFile()
             //{
             //    FileName = d.fileName,
@@ -197,16 +186,12 @@ namespace ETicaretAPI.API.Controllers
             })) ;
         }
         [HttpDelete()]
-        [Route("DeleteImageProduct/{id}")]
+        [Route("DeleteImageProduct/{Id}")]   //Id routdan ımageId Queryden
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> DeleteImageProduct(string id, string imageId)
+        public async Task<IActionResult> DeleteImageProduct([FromQuery,FromRoute]DeleteProductImageCommandRequest request)
         {
-            Product product = await _productReadRepository.Table.Include(x => x.ProductImageFiles)
-                 .FirstOrDefaultAsync(p => p.Id == Guid.Parse(id));
-            ProductImageFile productImageFile = product.ProductImageFiles.FirstOrDefault(p => p.Id == Guid.Parse(imageId));
-            product.ProductImageFiles.Remove(productImageFile);
-            await _productWriteRepository.SaveAsync();
+           
             return Ok();
         }
     }
