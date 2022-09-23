@@ -21,6 +21,7 @@ using ETicaretAPI.Persistence.Repositories.ProductImageFiles;
 using ETicaretAPI.Application.Repositories.ProductImageFiles;
 using ETicaretAPI.Application.Repositories.InvoiceFiles;
 using ETicaretAPI.Persistence.Repositories.InvoiceFiles;
+using ETicaretAPI.Domain.Entities.Identity;
 
 namespace ETicaretAPI.Persistence
 {
@@ -29,6 +30,7 @@ namespace ETicaretAPI.Persistence
     {
         public static void AddPersistenceServices(this IServiceCollection services)
         {
+            services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<ETicaretAPIDbContext>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICustomerReadRepository, CustomerReadRepository>();
             services.AddScoped<IProductReadRepository, ProductReadRepository>();
