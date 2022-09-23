@@ -30,7 +30,15 @@ namespace ETicaretAPI.Persistence
     {
         public static void AddPersistenceServices(this IServiceCollection services)
         {
-            services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<ETicaretAPIDbContext>();
+            services.AddIdentity<AppUser, AppRole>(options=>
+            {
+                options.Password.RequiredLength = 2;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+            }
+            ).AddEntityFrameworkStores<ETicaretAPIDbContext>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<ICustomerReadRepository, CustomerReadRepository>();
             services.AddScoped<IProductReadRepository, ProductReadRepository>();
