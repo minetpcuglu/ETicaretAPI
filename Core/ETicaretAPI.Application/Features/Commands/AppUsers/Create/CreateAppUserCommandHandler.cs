@@ -1,4 +1,4 @@
-﻿using ETicaretAPI.Application.Exceptions.AppUser;
+﻿using ETicaretAPI.Application.CrossCuttingConcerns.Exceptions.AppUser;
 using ETicaretAPI.Domain.Entities.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

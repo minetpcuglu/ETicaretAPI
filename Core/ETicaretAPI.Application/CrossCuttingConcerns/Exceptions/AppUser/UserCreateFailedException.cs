@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ETicaretAPI.Application.Exceptions.AppUser
+namespace ETicaretAPI.Application.CrossCuttingConcerns.Exceptions.AppUser
 {
    public class UserCreateFailedException:Exception
     {
