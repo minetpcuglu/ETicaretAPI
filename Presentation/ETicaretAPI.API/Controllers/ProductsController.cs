@@ -18,6 +18,7 @@ using ETicaretAPI.Application.Requests.Products;
 using ETicaretAPI.Domain.Entities;
 using ETicaretAPI.Domain.Entities.Files;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,6 +35,7 @@ namespace ETicaretAPI.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize/*(AuthenticationSchemes="Admin")*/]
     public class ProductsController : ControllerBase
     {
         private readonly IMediator _mediator;

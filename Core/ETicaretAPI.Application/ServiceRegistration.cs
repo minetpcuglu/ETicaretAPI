@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using ETicaretAPI.Application.Utilities.Security.Token;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace ETicaretAPI.Application
      
             public static void AddApplicationServices(this IServiceCollection services)
             {
+            services.AddScoped<ITokenHandler, TokenHandler>();
             services.AddMediatR(typeof(ServiceRegistration));
             }
         

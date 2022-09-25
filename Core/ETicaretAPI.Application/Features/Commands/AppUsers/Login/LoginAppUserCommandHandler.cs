@@ -1,4 +1,6 @@
 ﻿using ETicaretAPI.Application.CrossCuttingConcerns.Exceptions.AppUser;
+using ETicaretAPI.Application.Utilities.Security.DTOs;
+using ETicaretAPI.Application.Utilities.Security.Token;
 using ETicaretAPI.Domain.Entities.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -15,11 +17,13 @@ namespace ETicaretAPI.Application.Features.Commands.AppUsers.Login
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly ITokenHandler _tokenHandler;
 
-        public LoginAppUserCommandHandler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public LoginAppUserCommandHandler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenHandler tokenHandler)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _tokenHandler = tokenHandler;
         }
 
         public async Task<LoginAppUserCommandResponse> Handle(LoginAppUserCommandRequest request, CancellationToken cancellationToken)
@@ -32,9 +36,17 @@ namespace ETicaretAPI.Application.Features.Commands.AppUsers.Login
             SignInResult result=  await _signInManager.CheckPasswordSignInAsync(user,request.Password,false);
             if (result.Succeeded) //authentication başarılı
             {
-                //yetkiler belirlenir
+               AccessToken token =  _tokenHandler.CreateAccessToken(5); //5 dk lık bir token olsutur
+                return new LoginAppUserSuccessCommandResponse()
+                {
+                    Token =token
+                };
             }
-            return new();
+            //return new LoginAppUserErrorCommandResponse()
+            //{
+            //    ErrorMessage = "Kullanıcı adı veya şifre hatalı.Token Alınamadı"
+            //};
+            throw new AuthenticationErrorException();
         }
     }
 }
