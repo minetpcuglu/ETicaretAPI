@@ -22,7 +22,7 @@ namespace ETicaretAPI.Application.Configuration
         public static IServiceCollection AddMyJwtAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             var tokenOptions = configuration.GetSection("TokenOptions").Get<TokenOptions>();
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer("Admin",options =>
             {
                 options.TokenValidationParameters = new()
                 { //dogrulanması gereken özellikler

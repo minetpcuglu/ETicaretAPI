@@ -101,6 +101,10 @@ namespace ETicaretAPI.API
 
             app.UseRouting();
 
+            #region JWT
+            app.UseAuthentication();
+            #endregion
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
