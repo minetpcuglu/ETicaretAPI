@@ -33,9 +33,9 @@ namespace ETicaretAPI.Application.Features.Queries.ProductImageFiles.GetProductI
             {
                 //Path = $"{p.Storage}/{p.Path}",
                 Path = $"{configuration["BaseStorageUrl"]}/{p.Path}",  //azure göre configre edildi
-                 //Path = $"{}/{p.Path}",  //azure göre configre edildi
-               FileName= p.FileName,
-               Id= p.Id
+                                                                       //Path = $"{}/{p.Path}",  //azure göre configre edildi
+                FileName = p.FileName,
+                Id = p.Id
             }).ToList();
 
         }
