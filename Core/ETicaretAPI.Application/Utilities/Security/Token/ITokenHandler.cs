@@ -9,6 +9,6 @@ namespace ETicaretAPI.Application.Utilities.Security.Token
 {
    public interface ITokenHandler
     {
-        AccessToken CreateAccessToken(int minute); //token ömrünü;
+        AccessToken CreateAccessToken(int second); //token ömrünü;
     }
 }
