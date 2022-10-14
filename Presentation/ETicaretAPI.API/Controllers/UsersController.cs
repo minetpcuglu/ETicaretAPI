@@ -33,24 +33,6 @@ namespace ETicaretAPI.API.Controllers
             return Ok(value);
         }
 
-        [HttpPost]
-        [Route("Login")]
-        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> Login(LoginAppUserCommandRequest request)
-        {
-            LoginAppUserCommandResponse value = await _mediator.Send(request);
-            return Ok(value);
-        }
 
-        [HttpPost]
-        [Route("GoogleLogin")]
-        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
-        [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> GoogleLogin(GoogleLoginCommandRequest request)
-        {
-            GoogleLoginCommandResponse value = await _mediator.Send(request);
-            return Ok(value);
-        }
     }
 }

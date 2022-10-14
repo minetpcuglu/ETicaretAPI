@@ -22,6 +22,10 @@ using ETicaretAPI.Application.Repositories.ProductImageFiles;
 using ETicaretAPI.Application.Repositories.InvoiceFiles;
 using ETicaretAPI.Persistence.Repositories.InvoiceFiles;
 using ETicaretAPI.Domain.Entities.Identity;
+using ETicaretAPI.Application.Abstractions.Services.Users;
+using ETicaretAPI.Persistence.Concretes.Users;
+using ETicaretAPI.Persistence.Concretes.Auths;
+using ETicaretAPI.Application.Abstractions.Services.Auths;
 
 namespace ETicaretAPI.Persistence
 {
@@ -30,6 +34,8 @@ namespace ETicaretAPI.Persistence
     {
         public static void AddPersistenceServices(this IServiceCollection services)
         {
+
+         
             services.AddIdentity<AppUser, AppRole>(options=>
             {
                 options.Password.RequiredLength = 2;
@@ -52,6 +58,11 @@ namespace ETicaretAPI.Persistence
             services.AddScoped<IProductImageFileWriteRepository, ProductImageFileWriteRepository>();
             services.AddScoped<IInvoiceFileWriteRepository,InvoiceFileWriteRepository>();
             services.AddScoped<IInvoiceFileReadRepository,InvoiceFileReadRepository>();
+
+
+            //handler da cagırma icin
+            services.AddScoped<IUserAppService, UserAppService>();
+            services.AddScoped<IAuthAppService, AuthAppService>();
 
         }
     }

@@ -1,4 +1,5 @@
-﻿using ETicaretAPI.Application.CrossCuttingConcerns.Exceptions.AppUser;
+﻿using ETicaretAPI.Application.Abstractions.Services.Auths;
+using ETicaretAPI.Application.CrossCuttingConcerns.Exceptions.AppUser;
 using ETicaretAPI.Application.Utilities.Security.DTOs;
 using ETicaretAPI.Application.Utilities.Security.Token;
 using ETicaretAPI.Domain.Entities.Identity;
@@ -15,38 +16,20 @@ namespace ETicaretAPI.Application.Features.Commands.AppUsers.Login
 {
     public class LoginAppUserCommandHandler : IRequestHandler<LoginAppUserCommandRequest, LoginAppUserCommandResponse>
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
-        private readonly ITokenHandler _tokenHandler;
+        private readonly IAuthAppService _authAppService;
 
-        public LoginAppUserCommandHandler(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, ITokenHandler tokenHandler)
+        public LoginAppUserCommandHandler(IAuthAppService authAppService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _tokenHandler = tokenHandler;
+            _authAppService = authAppService;
         }
 
         public async Task<LoginAppUserCommandResponse> Handle(LoginAppUserCommandRequest request, CancellationToken cancellationToken)
         {
-         AppUser user=  await _userManager.FindByNameAsync(request.UsernameOrEmail);
-            if (user == null)
-                user = await _userManager.FindByEmailAsync(request.UsernameOrEmail);
-            if (user==null)
-                throw new NotFoundUserException();
-            SignInResult result=  await _signInManager.CheckPasswordSignInAsync(user,request.Password,false);
-            if (result.Succeeded) //authentication başarılı
+            var token = await _authAppService.LoginAsync(request.UsernameOrEmail, request.Password,15);
+            return new LoginAppUserSuccessCommandResponse()
             {
-               AccessToken token =  _tokenHandler.CreateAccessToken(5); //5 dk lık bir token olsutur
-                return new LoginAppUserSuccessCommandResponse()
-                {
-                    Token =token
-                };
-            }
-            //return new LoginAppUserErrorCommandResponse()
-            //{
-            //    ErrorMessage = "Kullanıcı adı veya şifre hatalı.Token Alınamadı"
-            //};
-            throw new AuthenticationErrorException();
+                Token = token
+            };
         }
     }
 }
