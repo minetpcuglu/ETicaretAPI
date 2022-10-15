@@ -1,4 +1,5 @@
 ﻿using ETicaretAPI.Application.Abstractions.Services.Users;
+using ETicaretAPI.Application.CrossCuttingConcerns.Exceptions.AppUser;
 using ETicaretAPI.Application.DTOs.User;
 using ETicaretAPI.Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
@@ -39,6 +40,21 @@ namespace ETicaretAPI.Persistence.Concretes.Users
                     response.Message += $"{item.Description} - {item.Code}\n";
             return response;
             
+        }
+
+        public async Task<bool> UpdateRefreshToken(string refreshToken, AppUser appUser, DateTime accessTokenDate,int addOnAccessTokenDate)
+        {
+          
+            if (appUser!=null)
+            {
+                appUser.RefreshToken = refreshToken; //refresh token güncelle
+                appUser.RefreshTokenEndDate = accessTokenDate.AddSeconds(addOnAccessTokenDate);//access token üzerine 5 10 dk eklenen hali refresh token
+                await _userManager.UpdateAsync(appUser);
+                return true;
+            }
+            return false;
+            throw new NotFoundUserException();
+           
         }
     }
 }

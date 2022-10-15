@@ -1,4 +1,5 @@
 ﻿using ETicaretAPI.Application.Abstractions.Services.Auths;
+using ETicaretAPI.Application.Abstractions.Services.Users;
 using ETicaretAPI.Application.CrossCuttingConcerns.Exceptions.AppUser;
 using ETicaretAPI.Application.Features.Commands.AppUsers.Login;
 using ETicaretAPI.Application.Utilities.Security.DTOs;
@@ -21,20 +22,22 @@ namespace ETicaretAPI.Persistence.Concretes.Auths
         public IConfiguration _configuration;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ITokenHandler _tokenHandler; //kullanıcıya token olusturma için
+        private readonly IUserAppService _userAppService;
 
-        public AuthAppService(UserManager<AppUser> userManager, IConfiguration configuration, SignInManager<AppUser> signInManager, ITokenHandler tokenHandler)
+        public AuthAppService(UserManager<AppUser> userManager, IConfiguration configuration, SignInManager<AppUser> signInManager, ITokenHandler tokenHandler, IUserAppService userAppService)
         {
             _userManager = userManager;
             _configuration = configuration;
             _signInManager = signInManager;
             _tokenHandler = tokenHandler;
+            _userAppService = userAppService;
         }
 
-        public async Task<AccessToken> GoogleLoginAsync(string idToken,int accessTokenLifeTime)
+        public async Task<AccessToken> GoogleLoginAsync(string idToken, int accessTokenLifeTime)
         {
             var settings = new GoogleJsonWebSignature.ValidationSettings()
             {
-                Audience = new List<string>  { _configuration["LoginSettings:Google:Client_ID"] } //hangi proje üzerinde dogrulaam yyapılcak
+                Audience = new List<string> { _configuration["LoginSettings:Google:Client_ID"] } //hangi proje üzerinde dogrulaam yyapılcak
             };
             var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
 
@@ -66,6 +69,7 @@ namespace ETicaretAPI.Persistence.Concretes.Auths
                     throw new Exception("Invalid external authentication.");
 
                 AccessToken token = _tokenHandler.CreateAccessToken(30);
+                await _userAppService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 15); //refresh token cagırma
 
                 return token;
             }
@@ -74,11 +78,6 @@ namespace ETicaretAPI.Persistence.Concretes.Auths
 
                 throw;
             }
-           
-
-           
-
-
         }
 
         public async Task<AccessToken> LoginAsync(string userNameOrEmail, string password,int accessTokenLifeTime)
@@ -92,9 +91,27 @@ namespace ETicaretAPI.Persistence.Concretes.Auths
             if (result.Succeeded) //authentication başarılı
             {
                 AccessToken token = _tokenHandler.CreateAccessToken(accessTokenLifeTime); //5 dk lık bir token olsutur
+                await _userAppService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 15); //refresh token cagırma
                 return token;
             }         
             throw new AuthenticationErrorException();
+        }
+
+        public async Task<AccessToken> RefreshTokenLoginAsync(string refreshToken)
+        {
+          AppUser? user=  _userManager.Users.FirstOrDefault(u => u.RefreshToken == refreshToken); // refresh token degeri kuallanıcadan gelenle eşit olan varmı
+            //varsa ?
+            if (user!=null && user?.RefreshTokenEndDate > DateTime.Now) //refresh token acces tokenın suresi bitirlmiş o fazlalık olan suredde örn accestoekn 45 refreshtoken 60 suan 55 de oalbilşir
+            {
+             AccessToken token=   _tokenHandler.CreateAccessToken(15);
+              await  _userAppService.UpdateRefreshToken(token.RefreshToken,user,token.Expiration,15); //refresh token kuallnıcadan gelen tokenla güncelle
+                return token;
+            }
+            else
+            {
+                throw new NotFoundUserException();
+            }
+           
         }
     }
 }

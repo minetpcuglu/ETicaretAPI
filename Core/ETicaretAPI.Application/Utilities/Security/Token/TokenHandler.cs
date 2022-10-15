@@ -39,14 +39,18 @@ namespace ETicaretAPI.Application.Utilities.Security.Token
                 //token oluşturucu sınıfından bir örnek alalım
                 JwtSecurityTokenHandler tokenHandler = new();
                 accessToken.Token = tokenHandler.WriteToken(securityToken);
+
+                accessToken.RefreshToken= CreateRefreshToken(); //refresh token olusturuldu
                 return accessToken;
         }
         public string CreateRefreshToken()
         {
-            byte[] number = new byte[32];
-            using RandomNumberGenerator random = RandomNumberGenerator.Create();
-            random.GetBytes(number);
-            return Convert.ToBase64String(number);
+            byte[] number = new byte[32]; //kompleks bir deger üretilmesi
+            using RandomNumberGenerator random = RandomNumberGenerator.Create(); //rastgele deger üretilme //üsing ile dispose edilebilir yani işi bittignde  otomatik dispose edilir
+            random.GetBytes(number); //ilgili byte random aktarma
+            return Convert.ToBase64String(number);  //metinsel hale alma
         }
+
+      
     }
 }

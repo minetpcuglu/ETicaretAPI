@@ -11,5 +11,7 @@ namespace ETicaretAPI.Application.Abstractions.Services.Auths
     {
         Task<AccessToken> GoogleLoginAsync(string idToken,int accessTokenLifeTime);
         Task<AccessToken> LoginAsync(string userNameOrEmail,string password, int accessTokenLifeTime);
+
+        Task<AccessToken> RefreshTokenLoginAsync(string refreshToken);
     }
 }

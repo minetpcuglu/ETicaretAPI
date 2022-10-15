@@ -9,6 +9,8 @@ namespace ETicaretAPI.Domain.Entities.Identity
 {
     public class AppUser:IdentityUser<string> 
     {
-        public string NameSurname { get; set; }
+        public string NameSurname { get; set; } 
+        public string RefreshToken { get; set; } //refresh token kendisi
+        public DateTime? RefreshTokenEndDate { get; set; } //refresh token ömrü
     }
 }
