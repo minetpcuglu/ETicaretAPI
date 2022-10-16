@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -44,7 +45,8 @@ namespace ETicaretAPI.Application.Configuration
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenOptions.SecurityKey)),
                     //IssuerSigningKey = SecurityKeyHelper.CreateSecurityKey(tokenOptions.SecurityKey)
                     //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenOptions.SecurityKey)),
-                    LifetimeValidator = (DateTime? notBefore, DateTime? expires, SecurityToken securityToken, TokenValidationParameters validationParameters) => expires != null ? expires > DateTime.UtcNow : false //token dakikası gecince yetkisiz olması ıcınnn  expiresiz suresi gectiginden dolayı access token yetkisi düsücektir
+                    LifetimeValidator = (DateTime? notBefore, DateTime? expires, SecurityToken securityToken, TokenValidationParameters validationParameters) => expires != null ? expires > DateTime.UtcNow : false ,//token dakikası gecince yetkisiz olması ıcınnn  expiresiz suresi gectiginden dolayı access token yetkisi düsücektir
+                    NameClaimType=ClaimTypes.Name //hangi kullanıcı istek yapıyo //jwt üzerinden name claimine karsılık gelen degeri user.ıdentity.name prop elde edilmesi
                 };
             });
             return services;

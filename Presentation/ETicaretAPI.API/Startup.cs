@@ -28,6 +28,8 @@ using System.Text;
 using System.Threading.Tasks;
 using ETicaretAPI.Application.Utilities.Security.Encryption;
 using ETicaretAPI.Application.Configuration;
+using Serilog.Context;
+using Serilog;
 
 namespace ETicaretAPI.API
 {
@@ -72,6 +74,7 @@ namespace ETicaretAPI.API
                                                 //services.AddStorage(StorageType.Local); -- Bu sekildede kullanýlabilir //enum ile kullaným hali
             #endregion
 
+
             #region JWT
             //Jwt Authentication
             services.AddMyJwtAuthentication(Configuration);
@@ -94,6 +97,10 @@ namespace ETicaretAPI.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ETicaretAPI.API v1"));
             }
 
+            //#region SeriLog //nerede loglama istersen oranın ustune koy
+            //app.UseSerilogRequestLogging();
+            //#endregion
+
             app.UseHttpsRedirection();
             app.UseStaticFiles(); //file upload için
 
@@ -106,6 +113,16 @@ namespace ETicaretAPI.API
             #endregion
 
             app.UseAuthorization();
+
+            #region User Authentice olmusmu
+            app.Use(async (context, next) =>
+            {
+                //gelen context icerisinde user name geldi ve gelen requestte jwt varsa name döndür yoksa null degeri ver
+                var userName = context.User.Identity?.IsAuthenticated != null || true ? context.User.Identity.Name : null;
+                LogContext.PushProperty("UserName",userName);
+                await next(); //işlem devam etsin
+            });
+            #endregion
 
             app.UseEndpoints(endpoints =>
             {

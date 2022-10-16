@@ -68,7 +68,7 @@ namespace ETicaretAPI.Persistence.Concretes.Auths
                 else
                     throw new Exception("Invalid external authentication.");
 
-                AccessToken token = _tokenHandler.CreateAccessToken(30);
+                AccessToken token = _tokenHandler.CreateAccessToken(accessTokenLifeTime,user);
                 await _userAppService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 15); //refresh token cagırma
 
                 return token;
@@ -90,7 +90,7 @@ namespace ETicaretAPI.Persistence.Concretes.Auths
             SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
             if (result.Succeeded) //authentication başarılı
             {
-                AccessToken token = _tokenHandler.CreateAccessToken(accessTokenLifeTime); //5 dk lık bir token olsutur
+                AccessToken token = _tokenHandler.CreateAccessToken(accessTokenLifeTime,user); //5 dk lık bir token olsutur
                 await _userAppService.UpdateRefreshToken(token.RefreshToken, user, token.Expiration, 15); //refresh token cagırma
                 return token;
             }         
@@ -103,7 +103,7 @@ namespace ETicaretAPI.Persistence.Concretes.Auths
             //varsa ?
             if (user!=null && user?.RefreshTokenEndDate > DateTime.Now) //refresh token acces tokenın suresi bitirlmiş o fazlalık olan suredde örn accestoekn 45 refreshtoken 60 suan 55 de oalbilşir
             {
-             AccessToken token=   _tokenHandler.CreateAccessToken(15);
+             AccessToken token=   _tokenHandler.CreateAccessToken(15,user);
               await  _userAppService.UpdateRefreshToken(token.RefreshToken,user,token.Expiration,15); //refresh token kuallnıcadan gelen tokenla güncelle
                 return token;
             }
