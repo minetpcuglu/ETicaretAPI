@@ -28,6 +28,7 @@ namespace ETicaretAPI.Application.Features.Commands.Products.Create
                 Price = request.Price
             });
             await _productWriteRepository.SaveAsync();
+            //throw new Exception("Log ekleme işllemi için calısıyor");
             return new(); //herhangi bir parametresi olmasıdıgndan CreateProductCommandResponse geriye döndürüyoruz
         }
     }

@@ -28,8 +28,12 @@ using System.Text;
 using System.Threading.Tasks;
 using ETicaretAPI.Application.Utilities.Security.Encryption;
 using ETicaretAPI.Application.Configuration;
-using Serilog.Context;
 using Serilog;
+using ETicaretAPI.Application.CrossCuttingConcerns.Exceptions.Logging;
+using Serilog.Context;
+using Serilog.Sinks.MSSqlServer;
+using ETicaretAPI.Application.Configuration.Logging;
+using System.Collections.ObjectModel;
 
 namespace ETicaretAPI.API
 {
@@ -48,7 +52,40 @@ namespace ETicaretAPI.API
         public void ConfigureServices(IServiceCollection services)
         {
 
+            #region LOG_ MsSql Log Table Create
+            IConfigurationRoot configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
+            SqlColumn sqlColumn = new SqlColumn();
+            sqlColumn.ColumnName = "UserName";
+            sqlColumn.DataType = System.Data.SqlDbType.NVarChar;
+            sqlColumn.PropertyName = "UserName";
+            sqlColumn.DataLength = 50;
+            sqlColumn.AllowNull = true;
+            ColumnOptions columnOpt = new ColumnOptions();
+            columnOpt.Store.Remove(StandardColumn.Properties);
+            columnOpt.Store.Add(StandardColumn.LogEvent);
+            columnOpt.AdditionalColumns = new Collection<SqlColumn> { sqlColumn };
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console().WriteTo.Debug(Serilog.Events.LogEventLevel.Information)
+                //.WriteTo.File("logs/log.txt")
+                .WriteTo.File("Logs/log.txt")
+                .WriteTo.MSSqlServer(
+                connectionString: configuration.GetConnectionString("SqlServer") /*logDB*/,
+                 sinkOptions: new MSSqlServerSinkOptions
+                 {
+                     AutoCreateSqlTable = true,
+                     TableName = "logs",
+                 },
+                 appConfiguration: null,
+                 columnOptions: columnOpt
+                )
+                .Enrich.FromLogContext() //harici bir prop kullanmak isteniyorsa
+                .Enrich.With<CustomUserNameColumn>()
+                .MinimumLevel.Information().ReadFrom.Configuration(configuration)
+                .CreateLogger();
+            #endregion
+
             services.AddOptions(); //appsettting dosya okuma
+
             #region Context
             services.AddScoped<ETicaretAPIDbContext>();
             services.AddDbContext<ETicaretAPIDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
@@ -97,9 +134,10 @@ namespace ETicaretAPI.API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ETicaretAPI.API v1"));
             }
 
-            //#region SeriLog //nerede loglama istersen oranın ustune koy
-            //app.UseSerilogRequestLogging();
-            //#endregion
+            #region SeriLog //nerede loglama istersen oranın ustune koy
+            //app.UseSerilogRequestLogging(); //gerek yok 
+            app.UseMiddleware<GlobalExceptionMiddleware>(); //log için middleware cagırıldı
+            #endregion
 
             app.UseHttpsRedirection();
             app.UseStaticFiles(); //file upload için

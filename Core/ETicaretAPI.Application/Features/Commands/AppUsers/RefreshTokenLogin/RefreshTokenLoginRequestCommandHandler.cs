@@ -22,10 +22,10 @@ namespace ETicaretAPI.Application.Features.Commands.AppUsers.RefreshTokenLogin
         public async Task<RefreshTokenLoginCommandResponse> Handle(RefreshTokenLoginCommandRequest request, CancellationToken cancellationToken)
         {
             //refresh token sahip kullanıcı varmı varsa o refresh token hala aktifmi epired olammısmı buna bakmaamız lazım eger refres token gecerliyse yeni bir access token uretilmesi gerekiyor ve yeni tokenı kullanıcya tekrardan geri dondurmemiz gerekicek
-            AccessToken token= await _authAppService.RefreshTokenLoginAsync(request.RefreshToken);
+            AccessToken token = await _authAppService.RefreshTokenLoginAsync(request.RefreshToken);
             return new()
             {
-              Token=token
+                Token = token
             };
         }
     }
