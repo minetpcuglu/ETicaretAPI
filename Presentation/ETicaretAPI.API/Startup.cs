@@ -52,7 +52,7 @@ namespace ETicaretAPI.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            #region LOG_ MsSql Log Table Create
+            #region SeriLog_ MsSql Log Table Create
             IConfigurationRoot configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
             SqlColumn sqlColumn = new SqlColumn();
             sqlColumn.ColumnName = "UserName";
@@ -64,24 +64,29 @@ namespace ETicaretAPI.API
             columnOpt.Store.Remove(StandardColumn.Properties);
             columnOpt.Store.Add(StandardColumn.LogEvent);
             columnOpt.AdditionalColumns = new Collection<SqlColumn> { sqlColumn };
+            #endregion
+
+            #region SeriLog Konfigruasyonu
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console().WriteTo.Debug(Serilog.Events.LogEventLevel.Information)
-                //.WriteTo.File("logs/log.txt")
-                .WriteTo.File("Logs/log.txt")
-                .WriteTo.MSSqlServer(
-                connectionString: configuration.GetConnectionString("SqlServer") /*logDB*/,
-                 sinkOptions: new MSSqlServerSinkOptions
-                 {
-                     AutoCreateSqlTable = true,
-                     TableName = "logs",
-                 },
-                 appConfiguration: null,
-                 columnOptions: columnOpt
-                )
-                .Enrich.FromLogContext() //harici bir prop kullanmak isteniyorsa
-                .Enrich.With<CustomUserNameColumn>()
-                .MinimumLevel.Information().ReadFrom.Configuration(configuration)
-                .CreateLogger();
+               .WriteTo.Console().WriteTo.Debug(Serilog.Events.LogEventLevel.Information)
+               //.WriteTo.File("logs/log.txt")
+               .WriteTo.MongoDBBson("mongodb://localhost:27017/Eticaret_db", collectionName: "Log")
+               .WriteTo.File("Logs/log.txt")
+               .WriteTo.Seq("http://localhost:5341/")
+               .WriteTo.MSSqlServer(
+               connectionString: configuration.GetConnectionString("SqlServer") /*logDB*/,
+                sinkOptions: new MSSqlServerSinkOptions
+                {
+                    AutoCreateSqlTable = true,
+                    TableName = "logs",
+                },
+                appConfiguration: null,
+                columnOptions: columnOpt
+               )
+               .Enrich.FromLogContext() //harici bir prop kullanmak isteniyorsa
+               .Enrich.With<CustomUserNameColumn>()
+               .MinimumLevel.Information().ReadFrom.Configuration(configuration)
+               .CreateLogger();
             #endregion
 
             services.AddOptions(); //appsettting dosya okuma
