@@ -104,7 +104,7 @@ namespace ETicaretAPI.Persistence.Concretes.Auths
             if (user!=null && user?.RefreshTokenEndDate > DateTime.Now) //refresh token acces tokenın suresi bitirlmiş o fazlalık olan suredde örn accestoekn 45 refreshtoken 60 suan 55 de oalbilşir
             {
              AccessToken token=   _tokenHandler.CreateAccessToken(15,user);
-              await  _userAppService.UpdateRefreshToken(token.RefreshToken,user,token.Expiration,15); //refresh token kuallnıcadan gelen tokenla güncelle
+              await  _userAppService.UpdateRefreshToken(token.RefreshToken,user,token.Expiration,300); //refresh token kuallnıcadan gelen tokenla güncelle
                 return token;
             }
             else

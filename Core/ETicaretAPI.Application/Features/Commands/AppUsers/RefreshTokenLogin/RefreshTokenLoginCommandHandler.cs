@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace ETicaretAPI.Application.Features.Commands.AppUsers.RefreshTokenLogin
 {
-    public class RefreshTokenLoginRequestCommandHandler : IRequestHandler<RefreshTokenLoginCommandRequest, RefreshTokenLoginCommandResponse>
+    public class RefreshTokenLoginCommandHandler : IRequestHandler<RefreshTokenLoginCommandRequest, RefreshTokenLoginCommandResponse>
     {
         private readonly IAuthAppService _authAppService;
 
-        public RefreshTokenLoginRequestCommandHandler(IAuthAppService authAppService)
+        public RefreshTokenLoginCommandHandler(IAuthAppService authAppService)
         {
             _authAppService = authAppService;
         }
