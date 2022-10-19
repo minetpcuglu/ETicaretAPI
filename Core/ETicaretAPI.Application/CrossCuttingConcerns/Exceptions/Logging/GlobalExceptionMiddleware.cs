@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace ETicaretAPI.Application.CrossCuttingConcerns.Exceptions.Logging
@@ -34,7 +35,12 @@ namespace ETicaretAPI.Application.CrossCuttingConcerns.Exceptions.Logging
         private static Task HandleExceptionAsync(HttpContext httpContext, Exception ex)
         {
             _logger.Error($"{DateTime.Now.ToString("HH:mm:ss")} : {ex}");
-
+            httpContext.Response.WriteAsync(JsonSerializer.Serialize(new
+            {
+                StatusCode=httpContext.Response.StatusCode, //alınan hatanın status kodu
+                Message = ex, //alınan hata
+                Title="Hata Alındı Log tablosunu inceleyiniz" //messasge
+            }));
             return Task.CompletedTask;
         }
     }
