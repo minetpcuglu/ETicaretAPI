@@ -34,13 +34,15 @@ using Serilog.Context;
 using Serilog.Sinks.MSSqlServer;
 using ETicaretAPI.Application.Configuration.Logging;
 using System.Collections.ObjectModel;
+using ETicaretAPI.ISignalR;
+using ETicaretAPI.ISignalR.Hubs;
 
 namespace ETicaretAPI.API
 {
     public class Startup
     {
 
-  
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -98,7 +100,7 @@ namespace ETicaretAPI.API
 
             #region CORS 
             services.AddCors(options => options.AddDefaultPolicy(policy =>
-              policy.WithOrigins("http://localhost:4200", "http://localhost:4200").AllowAnyHeader().AllowAnyMethod()));
+              policy.WithOrigins("http://localhost:4200", "http://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials()));  //signalr için crediantel izin verildi
             #endregion
 
             #region FluentValidation
@@ -114,6 +116,7 @@ namespace ETicaretAPI.API
             //services.AddStorage<LocalStorage>();//IoC container Extension ile yaptýk.  
             services.AddStorage<AzureStorage>();//IoC container Extension ile yaptýk.  
                                                 //services.AddStorage(StorageType.Local); -- Bu sekildede kullanýlabilir //enum ile kullaným hali
+            services.AddSignalRServices();
             #endregion
 
 
@@ -155,6 +158,8 @@ namespace ETicaretAPI.API
             app.UseAuthentication();
             #endregion
 
+
+
             app.UseAuthorization();
 
             #region User Authentice olmusmu
@@ -162,15 +167,18 @@ namespace ETicaretAPI.API
             {
                 //gelen context icerisinde user name geldi ve gelen requestte jwt varsa name döndür yoksa null degeri ver
                 var userName = context.User.Identity?.IsAuthenticated != null || true ? context.User.Identity.Name : null;
-                LogContext.PushProperty("UserName",userName);
+                LogContext.PushProperty("UserName", userName);
                 await next(); //işlem devam etsin
             });
             #endregion
 
+            #region SignalR
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ProductHub>("/products-hub"); //signalR
             });
+            #endregion
         }
     }
 }
