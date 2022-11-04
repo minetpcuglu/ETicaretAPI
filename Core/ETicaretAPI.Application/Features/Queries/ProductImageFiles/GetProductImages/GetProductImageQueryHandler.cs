@@ -25,18 +25,37 @@ namespace ETicaretAPI.Application.Features.Queries.ProductImageFiles.GetProductI
 
         public async Task<List<GetProductImageQueryResponse>> Handle(GetProductImageQueryRequest request, CancellationToken cancellationToken)
         {
-            //var data = await _productReadRepository.Table.Include(x => x.ProductImageFiles)
-            //    .FirstOrDefaultAsync(p => p.Id == Guid.Parse(id));
-            Product product = await _productReadRepository.Table.Include(x => x.ProductImageFiles)
-                 .FirstOrDefaultAsync(p => p.Id == Guid.Parse(request.Id));
-            return product.ProductImageFiles.Select(p => new GetProductImageQueryResponse
+        //var data = await _productReadRepository.Table.Include(x => x.ProductImageFiles)
+        //    .FirstOrDefaultAsync(p => p.Id == Guid.Parse(id));
+
+       
+
+            try
             {
-                //Path = $"{p.Storage}/{p.Path}",
-                Path = $"{configuration["BaseStorageUrl"]}/{p.Path}",  //azure göre configre edildi
-                                                                       //Path = $"{}/{p.Path}",  //azure göre configre edildi
-                FileName = p.FileName,
-                Id = p.Id
-            }).ToList();
+                Product product = await _productReadRepository.Table.Include(x => x.ProductImageFiles)
+                .FirstOrDefaultAsync(p => p.Id == Guid.Parse(request.Id));
+                return product.ProductImageFiles.Select(p => new GetProductImageQueryResponse
+                {
+                    
+                    //Path=p.Path,
+                    Path = $"{p.Storage}\\{p.Path}",
+                    //Path = $"{p.Path}",
+                    //Path = "C:/Users/User/Desktop/ETicaret/ETicaretAPI/Presentation/ETicaretAPI.API/wwwroot" $"{p.Path}",
+                    //Path = $"{p.Storage}/{p.Path}",
+                    /* Path = $"{configuration["BaseStorageUrl"]}/{p.Path}",*/  //azure göre configre edildi
+                                                                                //Path = $"{}/{p.Path}",  //azure göre configre edildi
+                    FileName = p.FileName,
+                    Id = p.Id
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+            //DirectoryInfo directory = new(path);
+            //return directory.GetFiles().Select(f => f.Name).ToList();
 
         }
     }

@@ -113,8 +113,8 @@ namespace ETicaretAPI.API
             services.AddPersistenceServices(); //IoC container Extension ile yaptýk.
             services.AddApplicationServices(); //IoC container Extension ile yaptýk.
             services.AddInfrastructureServices(); //IoC container Extension ile yaptýk.
-            //services.AddStorage<LocalStorage>();//IoC container Extension ile yaptýk.  
-            services.AddStorage<AzureStorage>();//IoC container Extension ile yaptýk.  
+            services.AddStorage<LocalStorage>();//IoC container Extension ile yaptýk.  
+            //services.AddStorage<AzureStorage>();//IoC container Extension ile yaptýk.  
                                                 //services.AddStorage(StorageType.Local); -- Bu sekildede kullanýlabilir //enum ile kullaným hali
             services.AddSignalRServices();
             #endregion

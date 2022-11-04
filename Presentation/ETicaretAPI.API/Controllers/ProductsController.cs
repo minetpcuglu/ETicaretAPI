@@ -1,4 +1,5 @@
 ﻿using ETicaretAPI.Application.Abstractions;
+using ETicaretAPI.Application.Features.Commands.ProductImageFiles.ChangeShowcaseImage;
 using ETicaretAPI.Application.Features.Commands.ProductImageFiles.DeleteProductImage;
 using ETicaretAPI.Application.Features.Commands.ProductImageFiles.UploadProductImage;
 using ETicaretAPI.Application.Features.Commands.Products.Create;
@@ -35,7 +36,7 @@ namespace ETicaretAPI.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Admin")]
+
     public class ProductsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -57,6 +58,7 @@ namespace ETicaretAPI.API.Controllers
 
         [HttpGet]
         [Route("GetProductGetById/{Id}")] //requestteki isimle aynı olmalıki bind edebilsin
+        [Authorize(AuthenticationSchemes = "Admin")]
         [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> GetProduct([FromRoute] GetByIdProductQueryRequest request) //data routedan geliyo
@@ -67,6 +69,7 @@ namespace ETicaretAPI.API.Controllers
 
         [HttpPost()]
         [Route("AddProduct")]
+        [Authorize(AuthenticationSchemes = "Admin")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> AddProduct([FromBody] CreateProductCommandRequest request)
@@ -78,6 +81,7 @@ namespace ETicaretAPI.API.Controllers
 
         [HttpPut()]
         [Route("UpdateProduct")]
+        [Authorize(AuthenticationSchemes = "Admin")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductCommandRequest request)
@@ -98,6 +102,7 @@ namespace ETicaretAPI.API.Controllers
 
         [HttpPost()]
         [Route("upload")]
+        [Authorize(AuthenticationSchemes = "Admin")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)] //ıd route parametre olarak gelmiyor query string olrak geliyo o zaman form query denilir.
         public async Task<IActionResult> Upload([FromQuery] UploadProductImageCommandRequest request)
@@ -121,8 +126,10 @@ namespace ETicaretAPI.API.Controllers
             ////var d1 = _productImageFileReadRepository.GetAll(false);
             return Ok();
         }
+
         [HttpGet]
         [Route("GetProductImageDetail/{Id}")]
+        //[Authorize(AuthenticationSchemes = "Admin")]
         //[ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
         //[ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> GetProductImageDetail([FromRoute] GetProductImageQueryRequest request)
@@ -132,6 +139,7 @@ namespace ETicaretAPI.API.Controllers
         }
         [HttpDelete()]
         [Route("DeleteImageProduct/{Id}")]   //Id routedan ımageId Queryden imageId
+        [Authorize(AuthenticationSchemes = "Admin")]
         [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> DeleteImageProduct([FromRoute] DeleteProductImageCommandRequest request, [FromQuery] string imageId)
@@ -140,5 +148,16 @@ namespace ETicaretAPI.API.Controllers
             DeleteProductImageCommandResponse response = await _mediator.Send(request);
             return Ok();
         }
+
+
+        [HttpGet]
+        [Route("[action]")]
+        [Authorize(AuthenticationSchemes = "Admin")]
+        public async Task<IActionResult> ChangeShowcase([FromQuery]ChangeShowcaseImageCommandRequest request)
+        {
+            var value = await _mediator.Send(request);
+            return Ok(value);
+        }
+
     }
 }
