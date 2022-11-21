@@ -1,4 +1,5 @@
-﻿using ETicaretAPI.Domain.Entities;
+﻿using ETicaretAPI.Domain;
+using ETicaretAPI.Domain.Entities;
 using ETicaretAPI.Domain.Entities.Common;
 using ETicaretAPI.Domain.Entities.Files;
 using ETicaretAPI.Domain.Entities.Identity;
@@ -23,6 +24,24 @@ namespace ETicaretAPI.Persistence.Context
         public DbSet<File> Files { get; set; }
         public DbSet<ProductImageFile> ProductImageFiles { get; set; }
         public DbSet<InvoiceFile> InvoiceFiles { get; set; }
+        public DbSet<BasketItem> BasketItems { get; set; }
+        public DbSet<Basket> Baskets { get; set; }
+
+
+        // sepet ile şiparis arasındaki ilişkinin birebir oldugunu belitrmek icin kulllanıldı
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<Order>()
+                 .HasKey(b => b.Id); //primarykey oldugu belirtildi
+
+            builder.Entity<Basket>()
+                .HasOne(b => b.Order)
+                .WithOne(o=>o.Basket)
+                .HasForeignKey<Order>(b=>b.Id);
+
+            base.OnModelCreating(builder); //base class olarak db context haricinde bir class kullanıldıgı icin bu methoıdu kullanmadan migration yaparsak hata alırız
+        }
+
 
 
         //gelen isteklerde insert uptade insert ise createddate update ise updateddate doldur

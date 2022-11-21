@@ -26,6 +26,12 @@ using ETicaretAPI.Application.Abstractions.Services.Users;
 using ETicaretAPI.Persistence.Concretes.Users;
 using ETicaretAPI.Persistence.Concretes.Auths;
 using ETicaretAPI.Application.Abstractions.Services.Auths;
+using ETicaretAPI.Application.Repositories.Baskets;
+using ETicaretAPI.Application.Repositories.BasketItems;
+using ETicaretAPI.Persistence.Repositories.Baskets;
+using ETicaretAPI.Persistence.Repositories.BasketItems;
+using ETicaretAPI.Persistence.Concretes.Baskets;
+using ETicaretAPI.Application.Abstractions.Services.Baskets;
 
 namespace ETicaretAPI.Persistence
 {
@@ -58,11 +64,16 @@ namespace ETicaretAPI.Persistence
             services.AddScoped<IProductImageFileWriteRepository, ProductImageFileWriteRepository>();
             services.AddScoped<IInvoiceFileWriteRepository,InvoiceFileWriteRepository>();
             services.AddScoped<IInvoiceFileReadRepository,InvoiceFileReadRepository>();
+            services.AddScoped<IBasketReadRepository,BasketReadRepository>();
+            services.AddScoped<IBasketWriteRepository,BasketWriteRepository>();
+            services.AddScoped<IBasketItemReadRepository,BasketItemReadRepository>();
+            services.AddScoped<IBasketItemWriteRepository,BasketItemWriteRepository>();
 
 
             //handler da cagırma icin
             services.AddScoped<IUserAppService, UserAppService>();
             services.AddScoped<IAuthAppService, AuthAppService>();
+            services.AddScoped<IBasketAppService, BasketAppService>();
 
         }
     }

@@ -15,5 +15,8 @@ namespace ETicaretAPI.Domain.Entities
         public Guid CustomerId { get; set; }
         public virtual Customer Customer { get; set; }
         public ICollection<Product> Products { get; set; }
+
+        //1-1
+        public Basket Basket{ get; set; }
     }
 }

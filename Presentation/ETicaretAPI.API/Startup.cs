@@ -110,6 +110,7 @@ namespace ETicaretAPI.API
             #endregion
 
             #region IoC
+            services.AddHttpContextAccessor();//clienttan gelen request neticesinde olusturualan http context nesnesine katmanlardaki claslar üzerinden (business logic üzerinden ) erişebilmemizi saglayan servis
             services.AddPersistenceServices(); //IoC container Extension ile yaptýk.
             services.AddApplicationServices(); //IoC container Extension ile yaptýk.
             services.AddInfrastructureServices(); //IoC container Extension ile yaptýk.

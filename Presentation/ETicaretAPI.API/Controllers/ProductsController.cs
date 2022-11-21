@@ -137,6 +137,7 @@ namespace ETicaretAPI.API.Controllers
             List<GetProductImageQueryResponse> response = await _mediator.Send(request);
             return Ok(response);
         }
+
         [HttpDelete()]
         [Route("DeleteImageProduct/{Id}")]   //Id routedan ımageId Queryden imageId
         [Authorize(AuthenticationSchemes = "Admin")]
@@ -148,7 +149,6 @@ namespace ETicaretAPI.API.Controllers
             DeleteProductImageCommandResponse response = await _mediator.Send(request);
             return Ok();
         }
-
 
         [HttpGet]
         [Route("[action]")]
